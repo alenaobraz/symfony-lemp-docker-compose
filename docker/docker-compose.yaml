@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   percona:
     image: ${PERCONA_IMAGE}
@@ -18,6 +16,19 @@ services:
       - ./var/storage/percona:/var/lib/mysql:rw
       - ./config/storage/percona/conf.d:/etc/my.cnf.d:ro
       - ./config/storage/percona/init.sql:/init.sql:ro
+
+  edge:
+    image: ${NGINX_IMAGE}
+    hostname: "nginx-{{.Node.Hostname}}"
+    ports:
+      - "8000:80"
+    networks:
+      - localserver
+    volumes:
+      - ./config/edge/nginx.conf:/etc/nginx/nginx.conf
+      - ./config/edge/conf.d:/etc/nginx/conf.d
+      - ../webapp:/opt/webapp
+      - ./var/log/edge/nginx:/var/log/nginx
 
 networks:
   localserver:
